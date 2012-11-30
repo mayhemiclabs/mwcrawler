@@ -28,13 +28,13 @@ import magic
 import os 
 import socket
 import datetime
+import random
 
 # By default thug analyis is disabled
 isthug	= False
 
 # variable for date value manipulation
 now		= datetime.datetime.now()
-str(now)
 
 # maximum wait time of http gets
 timeout	= 15
@@ -71,10 +71,25 @@ def decisor(url):
 	if not re.match('http',url):
 		url = 'http://'+url
 
+	useragent_list = (
+		'Mozilla/5.0 (X11; Linux i686; rv:17.0) Gecko/17.0 Firefox/17.0',
+		'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:17.0) Gecko/17.0 Firefox/17.0',
+		'Mozilla/5.0 (Windows NT 6.2; Win64; x64; rv:16.0.1) Gecko/20121011 Firefox/16.0.1',
+		'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0)',
+		'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 7.1; Trident/5.0)'
+	)
+
+	req_headers = {
+		'User-Agent': random.choice(useragent_list),
+		'Referer': 'http://www.google.com/trends/hottrends'
+	}
+
 	try:
-		url_dl = urllib2.urlopen(url).read()
+		url_request = urllib2.Request(url, None, req_headers)
+		opener = urllib2.build_opener()
+		url_dl = opener.open(url_request).read()
 	except Exception, e:
-		#print "-- Error: %s" % e
+		print "-- Error: %s" % e
 		return
 
 	filetype = gettype(url_dl).split(' ')[0]
